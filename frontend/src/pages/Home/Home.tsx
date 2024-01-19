@@ -1,13 +1,12 @@
-import { Button } from '@/components/ui/button';
+import TasksPage from './components/TasksPage';
 import SideMenu from './components/SideMenu';
-import Tasks from './components/Tasks';
 
 export default function Home() {
     return (
-        <>
+        <section className="flex h-full w-full flex-row">
             {/* <Button>Click me</Button> */}
-            {/* <SideMenu /> */}
-            <Tasks />
-        </>
+            <SideMenu />
+            <TasksPage />
+        </section>
     );
 }
