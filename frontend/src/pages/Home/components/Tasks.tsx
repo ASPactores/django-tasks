@@ -25,7 +25,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { DatePicker } from '@/components/ui/date-picker';
 
-function TaskForm({ setOpen }) {
+function TaskForm({ setOpen }: { setOpen: (open: boolean) => void }) {
     const taskFormSchema = z.object({
         task_name: z.string().min(3, { message: 'Task name is required' }),
         task_notes: z.string().optional(),
