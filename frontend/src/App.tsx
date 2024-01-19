@@ -4,9 +4,9 @@ import {
     Route,
     Link,
 } from 'react-router-dom';
-import Home from './pages/Home';
+import Home from './pages/Home/Home';
 import Error404 from './pages/Error404';
-import AuthPage from './pages/Authentication/Authentication';
+import AuthPage from './pages/Authentication/AuthPage';
 
 const router = createBrowserRouter([
     {
