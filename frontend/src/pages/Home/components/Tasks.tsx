@@ -18,7 +18,7 @@ const data = [
     {
         id: 2,
         task_name: 'Task 2',
-        task_notes: 'Task 2 notes',
+        task_notes: 'This is a note for Task 2.',
         task_due_date: new Date(),
     },
     {
@@ -152,19 +152,16 @@ export default function Tasks() {
                                                 </CardContent>
                                             </Card>
                                         )}
-
                                         <div className="mt-5">
                                             <p className="mt-2 text-base font-semibold">
                                                 NOTES
                                             </p>
-                                            {task.task_notes && (
-                                                <Card className="mt-2 py-4">
-                                                    <CardContent className="py-1 text-base">
-                                                        {task.task_notes ||
-                                                            'No notes available.'}
-                                                    </CardContent>
-                                                </Card>
-                                            )}
+                                            <Card className="mt-2 py-4">
+                                                <CardContent className="py-1 text-base">
+                                                    {task.task_notes ||
+                                                        'No notes available.'}
+                                                </CardContent>
+                                            </Card>
                                         </div>
                                     </SheetContent>
                                 </Sheet>
