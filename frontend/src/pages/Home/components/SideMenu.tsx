@@ -1,15 +1,14 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from './CustomScrollArea';
-import {
-    ListChecks,
-    LayoutList,
-    BookmarkCheck,
-    Plus,
-    LogOut,
-} from 'lucide-react';
+import { ListChecks, LayoutList, BookmarkCheck, LogOut } from 'lucide-react';
+import { useContext } from 'react';
+import AddMoreList from './AddMoreList';
+import { AddMoreListContext } from '@/contexts/AddMoreListContextProvider';
 
 export default function SideMenu() {
+    const { listOfTasks } = useContext(AddMoreListContext);
+
     return (
         <div className="flex h-full w-[300px]">
             <div className="flex h-full w-full flex-col justify-between rounded-lg bg-white px-1 py-4">
@@ -47,21 +46,19 @@ export default function SideMenu() {
                         </h2>
                         <div className="space-y-1">
                             <ScrollArea>
-                                <Button
-                                    variant="ghost"
-                                    className="w-full justify-start py-1 pl-6"
-                                >
-                                    <BookmarkCheck className="mr-2 h-4 w-4" />
-                                    Today
-                                </Button>
+                                {listOfTasks.map((list, index) => (
+                                    <Button
+                                        key={index}
+                                        variant="ghost"
+                                        className="w-full justify-start py-1 pl-6"
+                                    >
+                                        <BookmarkCheck className="mr-2 h-4 w-4" />
+                                        {list}
+                                    </Button>
+                                ))}
                             </ScrollArea>
-                            <Button
-                                variant="ghost"
-                                className="w-full justify-start py-1 pl-6"
-                            >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add More List
-                            </Button>
+                            {/*  */}
+                            <AddMoreList />
                         </div>
                     </div>
                 </div>
