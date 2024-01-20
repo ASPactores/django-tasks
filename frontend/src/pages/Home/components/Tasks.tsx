@@ -3,6 +3,7 @@ import moment from 'moment';
 import { CalendarClock } from 'lucide-react';
 import { Checkbox } from '@/components/ui/checkbox';
 import { useState } from 'react';
+import DeleteTaskDialog from './DeleteTaskDialog';
 
 const data = [
     {
@@ -93,8 +94,8 @@ export default function Tasks() {
                         key={task.id}
                         className={`pt-4 ${checkedTasks.includes(task.id) ? 'bg-slate-100' : ''}`}
                     >
-                        <CardContent className="flex flex-row items-center">
-                            <>
+                        <CardContent className="flex-wor flex justify-between">
+                            <div className="flex flex-row items-center">
                                 <Checkbox
                                     checked={checkedTasks.includes(task.id)}
                                     onCheckedChange={() =>
@@ -118,7 +119,10 @@ export default function Tasks() {
                                         )}
                                     </div>
                                 </div>
-                            </>
+                            </div>
+                            <div>
+                                <DeleteTaskDialog taskId={task.id} />
+                            </div>
                         </CardContent>
                     </Card>
                 ))}
