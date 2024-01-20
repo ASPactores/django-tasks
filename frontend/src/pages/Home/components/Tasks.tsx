@@ -1,150 +1,177 @@
-import { Button } from '@/components/ui/button';
-import { Plus } from 'lucide-react';
-import {
-    Dialog,
-    DialogContent,
-    DialogFooter,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
-import {
-    Form,
-    FormControl,
-    FormField,
-    FormItem,
-    FormLabel,
-    FormMessage,
-} from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent } from '@/components/ui/card';
+import moment from 'moment';
+import { CalendarClock } from 'lucide-react';
+import { Checkbox } from '@/components/ui/checkbox';
 import { useState } from 'react';
-import * as z from 'zod';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
-import { DatePicker } from '@/components/ui/date-picker';
+import DeleteTaskDialog from './DeleteTaskDialog';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Badge } from '@/components/ui/badge';
 
-function TaskForm({ setOpen }) {
-    const taskFormSchema = z.object({
-        task_name: z.string().min(3, { message: 'Task name is required' }),
-        task_notes: z.string().optional(),
-        task_due_date: z.coerce.date().optional(),
-    });
+const data = [
+    {
+        id: 1,
+        task_name: 'Task 1',
+        task_notes: 'Task 1 notes',
+        task_due_date: new Date(),
+        group: 'List #1',
+    },
+    {
+        id: 2,
+        task_name: 'Task 2',
+        task_notes: 'This is a note for Task 2.',
+        task_due_date: new Date(),
+    },
+    {
+        id: 3,
+        task_name: 'Task 3',
+        task_notes: 'Task 3 notes',
+        task_due_date: new Date(),
+    },
+    {
+        id: 4,
+        task_name: 'Task 4',
+        task_notes: 'Task 4 notes',
+        task_due_date: new Date(),
+    },
+    {
+        id: 5,
+        task_name: 'Task 5',
+        task_notes: 'Task 5 notes',
+        task_due_date: new Date(),
+    },
+];
 
-    type TaskFormInputs = z.infer<typeof taskFormSchema>;
+// export default function Tasks() {
+//     return (
+//         <>
+//             <div className="flex h-full w-full flex-col space-y-2">
+//                 {data.map((task) => (
+//                     <Card className="pt-4">
+//                         <CardContent className="flex flex-row items-center">
+//                             <>
+//                                 <Checkbox />
+//                                 <div className="ml-6">
+//                                     <p className="text-base font-semibold leading-none">
+//                                         {task.task_name}
+//                                     </p>
+//                                     <div className="mt-2 flex flex-row items-center text-sm">
+//                                         {task.task_due_date && (
+//                                             <>
+//                                                 <CalendarClock className="mr-2 h-5 w-5" />
+//                                                 {moment(
+//                                                     task.task_due_date,
+//                                                 ).format('ll')}
+//                                             </>
+//                                         )}
+//                                     </div>
+//                                 </div>
+//                             </>
+//                         </CardContent>
+//                     </Card>
+//                 ))}
+//             </div>
+//         </>
+//     );
+// }
 
-    const taskForm = useForm<TaskFormInputs>({
-        resolver: zodResolver(taskFormSchema),
-        defaultValues: {
-            task_name: '',
-            task_notes: '',
-            task_due_date: undefined,
-        },
-    });
+export default function Tasks() {
+    // State to track the checked status of each task
+    const [checkedTasks, setCheckedTasks] = useState<number[]>([]);
 
-    const submit = (data: TaskFormInputs) => {
-        console.log(data);
-
-        // TODO: When data is succesfully sent, close the dialog
-        setTimeout(() => {
-            setOpen(false);
-        }, 1000);
+    const handleCheckboxChange = (taskId: number) => {
+        setCheckedTasks((prevCheckedTasks) => {
+            if (prevCheckedTasks.includes(taskId)) {
+                return prevCheckedTasks.filter((id) => id !== taskId);
+            } else {
+                return [...prevCheckedTasks, taskId];
+            }
+        });
     };
 
     return (
         <>
-            <Form {...taskForm}>
-                <form
-                    onSubmit={taskForm.handleSubmit(submit)}
-                    className="space-y-8"
-                >
-                    <FormField
-                        control={taskForm.control}
-                        name="task_name"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Task Name</FormLabel>
-                                <FormControl>
-                                    <Input
-                                        placeholder="Enter your task name"
-                                        {...field}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={taskForm.control}
-                        name="task_notes"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Task Notes</FormLabel>
-                                <FormControl>
-                                    <Textarea {...field} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={taskForm.control}
-                        name="task_due_date"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Task Due Date</FormLabel>
-                                <FormControl>
-                                    <DatePicker
-                                        className="bg-white"
-                                        value={field.value}
-                                        onChange={(newDate) =>
-                                            taskForm.setValue(
-                                                'task_due_date',
-                                                newDate!,
-                                            )
-                                        }
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <DialogFooter>
-                        <Button type="submit">Add Task</Button>
-                    </DialogFooter>
-                </form>
-            </Form>
-        </>
-    );
-}
-
-export default function Tasks() {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <>
-            <div className="h-full w-full p-4">
-                <Dialog open={open} onOpenChange={setOpen}>
-                    <DialogTrigger asChild>
-                        <Button
-                            variant="outline"
-                            className="w-full justify-start border-2 pl-4"
-                        >
-                            <Plus className="mr-2 h-4 w-4" />
-                            Add New Task
-                        </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-[425px]">
-                        <DialogHeader>
-                            <DialogTitle>Add New Task</DialogTitle>
-                            <DialogDescription>
-                                Fill out the fields below.
-                            </DialogDescription>
-                        </DialogHeader>
-                        <TaskForm setOpen={setOpen} />
-                    </DialogContent>
-                </Dialog>
+            <div className="flex flex-col space-y-2">
+                {/* TODO: Add Scroll Area */}
+                {data.map((task) => (
+                    <Card
+                        key={task.id}
+                        className={`pt-4 hover:cursor-pointer hover:bg-slate-50 ${checkedTasks.includes(task.id) ? 'bg-slate-200' : ''}`}
+                        onClick={() => console.log('Hello')}
+                    >
+                        <CardContent>
+                            <div className="flex flex-row items-center justify-between">
+                                <Checkbox
+                                    checked={checkedTasks.includes(task.id)}
+                                    onCheckedChange={() =>
+                                        handleCheckboxChange(task.id)
+                                    }
+                                />
+                                <Sheet>
+                                    <SheetTrigger asChild>
+                                        <div
+                                            className={`ml-6 grow ${checkedTasks.includes(task.id) ? 'line-through' : ''}`}
+                                        >
+                                            <p className="text-base font-semibold leading-none">
+                                                {task.task_name}
+                                            </p>
+                                            <div className="mt-2 flex flex-row items-center text-sm">
+                                                {task.task_due_date && (
+                                                    <>
+                                                        <CalendarClock className="mr-2 h-5 w-5" />
+                                                        {moment(
+                                                            task.task_due_date,
+                                                        ).format('ll')}
+                                                    </>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </SheetTrigger>
+                                    <SheetContent className="flex flex-col gap-y-3">
+                                        <p className="text-base font-semibold underline">
+                                            TASK DETAILS
+                                        </p>
+                                        <p className="text-3xl font-bold leading-none">
+                                            {task.task_name}
+                                        </p>
+                                        {task.group && (
+                                            <div>
+                                                <Badge>{task.group}</Badge>
+                                            </div>
+                                        )}
+                                        {task.task_due_date && (
+                                            <Card className="py-4">
+                                                <CardContent className="mt-2 flex flex-col items-center justify-center gap-y-2 text-base font-semibold">
+                                                    {task.task_due_date && (
+                                                        <>
+                                                            <CalendarClock className="h-10 w-10" />
+                                                            {moment(
+                                                                task.task_due_date,
+                                                            ).format('LL')}
+                                                        </>
+                                                    )}
+                                                </CardContent>
+                                            </Card>
+                                        )}
+                                        <div className="mt-5">
+                                            <p className="mt-2 text-base font-semibold">
+                                                NOTES
+                                            </p>
+                                            <Card className="mt-2 py-4">
+                                                <CardContent className="py-1 text-base">
+                                                    {task.task_notes ||
+                                                        'No notes available.'}
+                                                </CardContent>
+                                            </Card>
+                                        </div>
+                                    </SheetContent>
+                                </Sheet>
+                                <div>
+                                    <DeleteTaskDialog taskId={task.id} />
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Card>
+                ))}
             </div>
         </>
     );
