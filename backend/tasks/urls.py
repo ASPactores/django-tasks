@@ -20,7 +20,14 @@ from auth_service import urls as auth_service_urls
 from task_data import urls as task_data_urls
 
 urlpatterns = [
-    path("api/tasks", include(task_data_urls)),  # include task_data urls
-    path("api/auth", include(auth_service_urls)),
+    path(
+        "api/",
+        include(
+            [
+                path("tasks/", include(task_data_urls)),
+                path("auth/", include(auth_service_urls)),
+            ]
+        ),
+    ),
     path("admin/", admin.site.urls),
 ]

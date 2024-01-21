@@ -20,8 +20,8 @@ class TaskGroup(models.Model):
 class TaskDetail(models.Model):
     task_id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     task_name = models.CharField(max_length=100)
-    task_notes = models.CharField(max_length=500)
-    task_due_date = models.DateField()
+    task_notes = models.CharField(max_length=500, null=True, blank=True)
+    task_due_date = models.DateField(null=True, blank=True)
     task_done = models.BooleanField(default=False)
     task_group = models.ForeignKey(
         TaskGroup, on_delete=models.CASCADE, null=True, blank=True
