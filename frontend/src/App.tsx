@@ -3,6 +3,7 @@ import Home from './pages/Home/Home';
 import Error404 from './pages/Error404';
 import AuthPage from './pages/Authentication/AuthPage';
 import { AddMoreListContextProvider } from './contexts/AddMoreListContextProvider';
+import { QueryClient, QueryClientProvider } from 'react-query';
 
 const router = createBrowserRouter([
     {
@@ -19,12 +20,16 @@ const router = createBrowserRouter([
     },
 ]);
 
+const queryClient = new QueryClient();
+
 export default function App() {
     return (
         <div className="h-screen">
-            <AddMoreListContextProvider>
-                <RouterProvider router={router} />
-            </AddMoreListContextProvider>
+            <QueryClientProvider client={queryClient}>
+                <AddMoreListContextProvider>
+                    <RouterProvider router={router} />
+                </AddMoreListContextProvider>
+            </QueryClientProvider>
         </div>
     );
 }
