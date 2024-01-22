@@ -9,4 +9,5 @@ urlpatterns = [
     path("is_authenticated", views.is_authenticated, name="is_authenticated"),
     # path("logout", knox_views.LogoutView.as_view(), name="logout"),
     path("logout", views.logout, name="logout"),
+    # path("user_info", views.get_user_info, name="user_info"),
 ]

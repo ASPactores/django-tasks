@@ -83,3 +83,14 @@ def logout(request):
 @permission_classes([IsAuthenticated])
 def is_authenticated(_):
     return Response({"is_authenticated": True}, status=status.HTTP_200_OK)
+
+
+# This will be useful later
+# @api_view(["GET"])
+# def get_user_info(request):
+#     user = Token.objects.get(
+#         key=request.headers.get("Authorization").split(" ")[1]
+#     ).user
+#     return Response(
+#         {"user": UserSerializer(instance=user).data}, status=status.HTTP_200_OK
+#     )
