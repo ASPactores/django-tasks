@@ -1,13 +1,36 @@
 import { Button } from '@/components/ui/button';
 import { Separator } from '@/components/ui/separator';
 import { ScrollArea } from './CustomScrollArea';
-import { ListChecks, LayoutList, BookmarkCheck, LogOut } from 'lucide-react';
-import { useContext } from 'react';
+import {
+    ListChecks,
+    LayoutList,
+    BookmarkCheck,
+    LogOut,
+    List,
+} from 'lucide-react';
+import { useContext, useEffect } from 'react';
 import AddMoreList from './AddMoreList';
 import { AddMoreListContext } from '@/contexts/AddMoreListContextProvider';
+import { useQuery } from 'react-query';
+import { getTaskGroups } from '@/api/taskApiService';
 
 export default function SideMenu() {
-    const { listOfTasks } = useContext(AddMoreListContext);
+    const { listOfTasks, setListOfTasks } = useContext(AddMoreListContext);
+    const { data } = useQuery('taskGroups', getTaskGroups);
+
+    // if (data) {
+    //     const group_list = data.map((taskGroup) => taskGroup.group_name);
+    //     console.log(group_list);
+    //     // setListOfTasks(() => data.map((taskGroup) => taskGroup.group_name));
+    // }
+
+    useEffect(() => {
+        if (data) {
+            const group_list = data.map((taskGroup) => taskGroup.group_name);
+            console.log(group_list);
+            setListOfTasks(group_list);
+        }
+    }, [data, setListOfTasks]);
 
     return (
         <div className="flex h-full w-[300px]">
@@ -31,6 +54,13 @@ export default function SideMenu() {
                             >
                                 <LayoutList className="mr-2 h-4 w-4" />
                                 Upcoming
+                            </Button>
+                            <Button
+                                variant="ghost"
+                                className="w-full justify-start py-1 pl-6"
+                            >
+                                <List className="mr-2 h-4 w-4" />
+                                All Tasks
                             </Button>
                         </div>
                     </div>
