@@ -9,7 +9,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.authentication import TokenAuthentication, SessionAuthentication
 from .models import TaskDetail, TaskGroup
 from datetime import date
-from .serializers import TaskDetailSerializers, TaskGroupSerializers
+from .serializers import (
+    TaskDetailSerializers,
+    TaskGroupSerializers,
+    TaskGroupRetrieveDetailSerializers,
+)
 from rest_framework import status
 
 # from django.shortcuts import get_object_or_404
@@ -74,16 +78,8 @@ def get_task_group(request):
 def get_task_by_group_id(request, group_id):
     token = request.headers.get("Authorization").split(" ")[1]
     user = Token.objects.get(key=token).user
-    # print(
-    #     TaskGroupSerializers(
-    #         TaskGroup.objects.filter(
-    #             task_owner_id=user.id, group_id__contains=group_id
-    #         ),
-    #         many=True,
-    #     ).data
-    # )
     task = TaskDetail.objects.filter(task_owner_id=user.id, task_group_id=group_id)
-    serializer = TaskDetailSerializers(task, many=True)
+    serializer = TaskGroupRetrieveDetailSerializers(task, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
