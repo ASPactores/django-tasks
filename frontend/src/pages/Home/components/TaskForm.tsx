@@ -19,7 +19,7 @@ import { useMutation, useQueryClient } from 'react-query';
 import { CircleSlash, XCircle } from 'lucide-react';
 import { createTask } from '@/api/taskApiService';
 import { toast } from 'sonner';
-import { useLocation, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { Task } from '@/model';
 
 export default function TaskForm({
