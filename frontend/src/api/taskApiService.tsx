@@ -48,3 +48,31 @@ export const getTaskGroups = async () => {
 
     return response?.data;
 };
+
+// Task API
+export const getTodayTasks = async () => {
+    const response = await useApi<Task[]>({
+        url: '/api/tasks/today',
+        method: 'GET',
+    });
+
+    return response?.data;
+};
+
+export const getUpcomingTasks = async () => {
+    const response = await useApi<Task[]>({
+        url: '/api/tasks/upcoming',
+        method: 'GET',
+    });
+
+    return response?.data;
+};
+
+export const getAllTasks = async () => {
+    const response = await useApi<Task[]>({
+        url: '/api/tasks/all',
+        method: 'GET',
+    });
+
+    return response?.data;
+};

@@ -12,14 +12,14 @@ import {
 import { Trash2 } from 'lucide-react';
 
 interface DeleteTaskDialogProps {
-    taskId: number;
+    taskId: string;
 }
 
 export default function DeleteTaskDialog({ taskId }: DeleteTaskDialogProps) {
     const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
 
     const handleDeleteTask = async (
-        id: number,
+        id: string,
         setOpenDeleteDialog: (open: boolean) => void,
     ) => {
         console.log(id, 'is deleted.');

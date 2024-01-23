@@ -43,7 +43,7 @@ export default function AddMoreListForms({
                     {response?.data.group_name} has been created successfully!
                 </>,
             );
-            setListOfTasks([...listOfTasks, response!.data.group_name]);
+            setListOfTasks([...listOfTasks, response!.data]);
         },
         onError: () => {
             toast(

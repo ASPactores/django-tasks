@@ -13,27 +13,43 @@ import AddMoreList from './AddMoreList';
 import { AddMoreListContext } from '@/contexts/AddMoreListContextProvider';
 import { useQuery } from 'react-query';
 import { getTaskGroups } from '@/api/taskApiService';
+import { NavLink } from 'react-router-dom';
+
+const main_butons = [
+    {
+        name: 'Today',
+        icon: <ListChecks className="mr-2 h-4 w-4" />,
+        path: '/',
+    },
+    {
+        name: 'Upcoming',
+        icon: <LayoutList className="mr-2 h-4 w-4" />,
+        path: '/upcoming',
+    },
+    {
+        name: 'All Tasks',
+        icon: <List className="mr-2 h-4 w-4" />,
+        path: '/all',
+    },
+];
 
 export default function SideMenu() {
     const { listOfTasks, setListOfTasks } = useContext(AddMoreListContext);
     const { data } = useQuery('taskGroups', getTaskGroups);
 
-    // if (data) {
-    //     const group_list = data.map((taskGroup) => taskGroup.group_name);
-    //     console.log(group_list);
-    //     // setListOfTasks(() => data.map((taskGroup) => taskGroup.group_name));
-    // }
-
     useEffect(() => {
         if (data) {
-            const group_list = data.map((taskGroup) => taskGroup.group_name);
+            const group_list = data.map((taskGroup) => ({
+                group_name: taskGroup.group_name,
+                group_id: taskGroup.group_id,
+            }));
             console.log(group_list);
             setListOfTasks(group_list);
         }
     }, [data, setListOfTasks]);
 
     return (
-        <div className="flex h-full w-[300px]">
+        <div className="hidden h-full w-[300px] sm:flex">
             <div className="flex h-full w-full flex-col justify-between rounded-lg bg-white px-1 py-4">
                 <div>
                     <div className="px-3 py-2">
@@ -41,27 +57,20 @@ export default function SideMenu() {
                             TASKS
                         </h2>
                         <div className="space-y-1">
-                            <Button
-                                variant="ghost"
-                                className="w-full justify-start py-1 pl-6"
-                            >
-                                <ListChecks className="mr-2 h-4 w-4" />
-                                Today
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                className="w-full justify-start py-1 pl-6"
-                            >
-                                <LayoutList className="mr-2 h-4 w-4" />
-                                Upcoming
-                            </Button>
-                            <Button
-                                variant="ghost"
-                                className="w-full justify-start py-1 pl-6"
-                            >
-                                <List className="mr-2 h-4 w-4" />
-                                All Tasks
-                            </Button>
+                            {main_butons.map((button, index) => (
+                                <NavLink key={index} to={button.path} end>
+                                    {({ isActive }) => (
+                                        <Button
+                                            key={index}
+                                            variant="ghost"
+                                            className={`w-full justify-start py-1 pl-6 ${isActive ? 'bg-gray-200' : ''}`}
+                                        >
+                                            {button.icon}
+                                            {button.name}
+                                        </Button>
+                                    )}
+                                </NavLink>
+                            ))}
                         </div>
                     </div>
                     <div className="flex justify-center">
@@ -83,7 +92,7 @@ export default function SideMenu() {
                                         className="w-full justify-start py-1 pl-6"
                                     >
                                         <BookmarkCheck className="mr-2 h-4 w-4" />
-                                        {list}
+                                        {list.group_name}
                                     </Button>
                                 ))}
                             </ScrollArea>
