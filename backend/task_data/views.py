@@ -55,7 +55,7 @@ def get_all_tasks(request):
     token = request.headers.get("Authorization").split(" ")[1]
     user = Token.objects.get(key=token).user
     tasks = TaskDetail.objects.filter(task_owner=user.id).order_by("task_due_date")
-    serializer = TaskDetailSerializers(tasks, many=True)
+    serializer = TaskGroupRetrieveDetailSerializers(tasks, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
