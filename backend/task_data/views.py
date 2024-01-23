@@ -74,8 +74,16 @@ def get_task_group(request):
 def get_task_by_group_id(request, group_id):
     token = request.headers.get("Authorization").split(" ")[1]
     user = Token.objects.get(key=token).user
-    task_group = TaskGroup.objects.filter(group_owner=user.id, group_id=group_id)
-    serializer = TaskGroupSerializers(task_group, many=True)
+    # print(
+    #     TaskGroupSerializers(
+    #         TaskGroup.objects.filter(
+    #             task_owner_id=user.id, group_id__contains=group_id
+    #         ),
+    #         many=True,
+    #     ).data
+    # )
+    task = TaskDetail.objects.filter(task_owner_id=user.id, task_group_id=group_id)
+    serializer = TaskDetailSerializers(task, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
