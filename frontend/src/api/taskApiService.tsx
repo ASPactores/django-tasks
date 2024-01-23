@@ -49,6 +49,15 @@ export const getTaskGroups = async () => {
     return response?.data;
 };
 
+export const getTaskByGroupId = async (group_id: string) => {
+    const response = await useApi<Task[]>({
+        url: `/api/tasks/group/${group_id}`,
+        method: 'GET',
+    });
+
+    return response?.data;
+};
+
 // Task API
 export const getTodayTasks = async () => {
     const response = await useApi<Task[]>({

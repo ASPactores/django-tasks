@@ -9,6 +9,6 @@ export interface Task {
     task_notes?: string;
     task_due_date?: string;
     task_done?: boolean;
-    task_group?: string;
+    task_group?: TaskGroup;
     task_owner?: string;
 }

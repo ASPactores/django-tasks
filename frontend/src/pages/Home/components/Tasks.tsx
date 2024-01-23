@@ -11,42 +11,9 @@ import {
     getTodayTasks,
     getUpcomingTasks,
     getAllTasks,
+    getTaskByGroupId,
 } from '@/api/taskApiService';
-import { useLocation } from 'react-router-dom';
-
-const data = [
-    {
-        id: 1,
-        task_name: 'Task 1',
-        task_notes: 'Task 1 notes',
-        task_due_date: new Date(),
-        group: 'List #1',
-    },
-    {
-        id: 2,
-        task_name: 'Task 2',
-        task_notes: 'This is a note for Task 2.',
-        task_due_date: new Date(),
-    },
-    {
-        id: 3,
-        task_name: 'Task 3',
-        task_notes: 'Task 3 notes',
-        task_due_date: new Date(),
-    },
-    {
-        id: 4,
-        task_name: 'Task 4',
-        task_notes: 'Task 4 notes',
-        task_due_date: new Date(),
-    },
-    {
-        id: 5,
-        task_name: 'Task 5',
-        task_notes: 'Task 5 notes',
-        task_due_date: new Date(),
-    },
-];
+import { useLocation, useParams } from 'react-router-dom';
 
 // export default function Tasks() {
 //     return (
@@ -85,6 +52,7 @@ export default function Tasks() {
     // State to track the checked status of each task
     const [checkedTasks, setCheckedTasks] = useState<string[]>([]);
     const { pathname } = useLocation();
+    const { group_id } = useParams<{ group_id: string }>();
 
     let query;
 
@@ -100,6 +68,7 @@ export default function Tasks() {
             query = useQuery('allTasks', getAllTasks);
             break;
         default:
+            query = useQuery(group_id!, () => getTaskByGroupId(group_id!));
             break;
     }
 
@@ -113,11 +82,14 @@ export default function Tasks() {
         });
     };
 
+    console.log(query.data);
+
     return (
         <>
             <div className="flex flex-col space-y-2">
                 {/* TODO: Add Scroll Area */}
                 {query?.data &&
+                    query.data.length !== 0 &&
                     query?.data!.map((task) => (
                         <Card
                             key={task.task_id}
@@ -161,10 +133,13 @@ export default function Tasks() {
                                             <p className="text-3xl font-bold leading-none">
                                                 {task.task_name}
                                             </p>
-                                            {task.task_group && (
+                                            {task.task_group?.group_name && (
                                                 <div>
                                                     <Badge>
-                                                        {task.task_group}
+                                                        {
+                                                            task.task_group
+                                                                .group_name
+                                                        }
                                                     </Badge>
                                                 </div>
                                             )}

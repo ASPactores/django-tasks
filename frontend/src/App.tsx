@@ -33,6 +33,10 @@ const router = createBrowserRouter([
                 path: 'auth',
                 element: <AuthPage />,
             },
+            {
+                path: '/group/:group_id',
+                element: <ViewTasks />,
+            },
         ],
     },
     {

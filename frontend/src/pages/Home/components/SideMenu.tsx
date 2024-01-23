@@ -86,14 +86,22 @@ export default function SideMenu() {
                         <div className="space-y-1">
                             <ScrollArea>
                                 {listOfTasks.map((list, index) => (
-                                    <Button
+                                    <NavLink
                                         key={index}
-                                        variant="ghost"
-                                        className="w-full justify-start py-1 pl-6"
+                                        to={`group/${list.group_id}`}
+                                        end
                                     >
-                                        <BookmarkCheck className="mr-2 h-4 w-4" />
-                                        {list.group_name}
-                                    </Button>
+                                        {({ isActive }) => (
+                                            <Button
+                                                key={index}
+                                                variant="ghost"
+                                                className={`w-full justify-start py-1 pl-6 ${isActive ? 'bg-gray-200' : ''}`}
+                                            >
+                                                <BookmarkCheck className="mr-2 h-4 w-4" />
+                                                {list.group_name}
+                                            </Button>
+                                        )}
+                                    </NavLink>
                                 ))}
                             </ScrollArea>
                             {/*  */}
