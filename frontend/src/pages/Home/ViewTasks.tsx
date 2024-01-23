@@ -1,5 +1,4 @@
 import TasksPage from './components/TasksPage';
-import SideMenu from './components/SideMenu';
 
 export default function ViewTasks() {
     return (
