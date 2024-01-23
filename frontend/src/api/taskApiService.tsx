@@ -85,3 +85,30 @@ export const getAllTasks = async () => {
 
     return response?.data;
 };
+
+export const createTask = async (task: Task) => {
+    const response = await useApi<
+        Task | (Omit<Task, 'task_group'> & { task_group?: string | undefined })
+    >({
+        url: '/api/tasks/add-task',
+        method: 'POST',
+        data: task,
+    });
+
+    return response;
+};
+
+export const updateTaskStatus = async ({
+    task_id,
+    task_done,
+}: Pick<Task, 'task_id' | 'task_done'>) => {
+    const response = useApi<Pick<Task, 'task_id' | 'task_done'>>({
+        url: `/api/tasks/update-task/${task_id}`,
+        method: 'PUT',
+        data: {
+            task_done: task_done,
+        },
+    });
+
+    return response;
+};

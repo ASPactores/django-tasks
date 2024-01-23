@@ -6,14 +6,21 @@ import { useState } from 'react';
 import DeleteTaskDialog from './DeleteTaskDialog';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
-import { useQuery } from 'react-query';
+import {
+    useQuery,
+    useMutation,
+    useQueryClient,
+    UseQueryOptions,
+} from 'react-query';
 import {
     getTodayTasks,
     getUpcomingTasks,
     getAllTasks,
     getTaskByGroupId,
+    updateTaskStatus,
 } from '@/api/taskApiService';
 import { useLocation, useParams } from 'react-router-dom';
+import { Task } from '@/model';
 
 // export default function Tasks() {
 //     return (
@@ -50,11 +57,11 @@ import { useLocation, useParams } from 'react-router-dom';
 
 export default function Tasks() {
     // State to track the checked status of each task
-    const [checkedTasks, setCheckedTasks] = useState<string[]>([]);
     const { pathname } = useLocation();
     const { group_id } = useParams<{ group_id: string }>();
+    const queryClient = useQueryClient();
 
-    let query;
+    let query: any;
 
     // Fetch tasks based on the current path
     switch (pathname) {
@@ -72,17 +79,33 @@ export default function Tasks() {
             break;
     }
 
+    const [checkedTasks, setCheckedTasks] = useState<string[]>(() => {
+        return (
+            query?.data
+                ?.filter((task: Task) => task.task_done)
+                .map((task: Task) => task.task_id) || []
+        );
+    });
+
+    const { mutate, isLoading } = useMutation(updateTaskStatus, {
+        onSuccess: () => {
+            queryClient.invalidateQueries();
+        },
+    });
+
     const handleCheckboxChange = (taskId: string) => {
         setCheckedTasks((prevCheckedTasks) => {
             if (prevCheckedTasks.includes(taskId)) {
+                mutate({ task_id: taskId, task_done: false });
                 return prevCheckedTasks.filter((id) => id !== taskId);
             } else {
+                mutate({ task_id: taskId, task_done: true });
                 return [...prevCheckedTasks, taskId];
             }
         });
     };
 
-    console.log(query.data);
+    console.log(checkedTasks);
 
     return (
         <>
@@ -90,11 +113,10 @@ export default function Tasks() {
                 {/* TODO: Add Scroll Area */}
                 {query?.data &&
                     query.data.length !== 0 &&
-                    query?.data!.map((task) => (
+                    query?.data!.map((task: Task) => (
                         <Card
                             key={task.task_id}
                             className={`pt-4 hover:cursor-pointer hover:bg-slate-50 ${checkedTasks.includes(task.task_id!) ? 'bg-slate-200' : ''}`}
-                            onClick={() => console.log('Hello')}
                         >
                             <CardContent>
                                 <div className="flex flex-row items-center justify-between">
