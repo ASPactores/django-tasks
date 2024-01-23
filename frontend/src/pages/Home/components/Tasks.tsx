@@ -6,6 +6,13 @@ import { useState } from 'react';
 import DeleteTaskDialog from './DeleteTaskDialog';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Badge } from '@/components/ui/badge';
+import { useQuery } from 'react-query';
+import {
+    getTodayTasks,
+    getUpcomingTasks,
+    getAllTasks,
+} from '@/api/taskApiService';
+import { useLocation } from 'react-router-dom';
 
 const data = [
     {
@@ -76,9 +83,27 @@ const data = [
 
 export default function Tasks() {
     // State to track the checked status of each task
-    const [checkedTasks, setCheckedTasks] = useState<number[]>([]);
+    const [checkedTasks, setCheckedTasks] = useState<string[]>([]);
+    const { pathname } = useLocation();
 
-    const handleCheckboxChange = (taskId: number) => {
+    let query;
+
+    // Fetch tasks based on the current path
+    switch (pathname) {
+        case '/':
+            query = useQuery('todayTasks', getTodayTasks);
+            break;
+        case '/upcoming':
+            query = useQuery('upcomingTasks', getUpcomingTasks);
+            break;
+        case '/all':
+            query = useQuery('allTasks', getAllTasks);
+            break;
+        default:
+            break;
+    }
+
+    const handleCheckboxChange = (taskId: string) => {
         setCheckedTasks((prevCheckedTasks) => {
             if (prevCheckedTasks.includes(taskId)) {
                 return prevCheckedTasks.filter((id) => id !== taskId);
@@ -92,86 +117,93 @@ export default function Tasks() {
         <>
             <div className="flex flex-col space-y-2">
                 {/* TODO: Add Scroll Area */}
-                {data.map((task) => (
-                    <Card
-                        key={task.id}
-                        className={`pt-4 hover:cursor-pointer hover:bg-slate-50 ${checkedTasks.includes(task.id) ? 'bg-slate-200' : ''}`}
-                        onClick={() => console.log('Hello')}
-                    >
-                        <CardContent>
-                            <div className="flex flex-row items-center justify-between">
-                                <Checkbox
-                                    checked={checkedTasks.includes(task.id)}
-                                    onCheckedChange={() =>
-                                        handleCheckboxChange(task.id)
-                                    }
-                                />
-                                <Sheet>
-                                    <SheetTrigger asChild>
-                                        <div
-                                            className={`ml-6 grow ${checkedTasks.includes(task.id) ? 'line-through' : ''}`}
-                                        >
-                                            <p className="text-base font-semibold leading-none">
-                                                {task.task_name}
-                                            </p>
-                                            <div className="mt-2 flex flex-row items-center text-sm">
-                                                {task.task_due_date && (
-                                                    <>
-                                                        <CalendarClock className="mr-2 h-5 w-5" />
-                                                        {moment(
-                                                            task.task_due_date,
-                                                        ).format('ll')}
-                                                    </>
-                                                )}
-                                            </div>
-                                        </div>
-                                    </SheetTrigger>
-                                    <SheetContent className="flex flex-col gap-y-3">
-                                        <p className="text-base font-semibold underline">
-                                            TASK DETAILS
-                                        </p>
-                                        <p className="text-3xl font-bold leading-none">
-                                            {task.task_name}
-                                        </p>
-                                        {task.group && (
-                                            <div>
-                                                <Badge>{task.group}</Badge>
-                                            </div>
+                {query?.data &&
+                    query?.data!.map((task) => (
+                        <Card
+                            key={task.task_id}
+                            className={`pt-4 hover:cursor-pointer hover:bg-slate-50 ${checkedTasks.includes(task.task_id!) ? 'bg-slate-200' : ''}`}
+                            onClick={() => console.log('Hello')}
+                        >
+                            <CardContent>
+                                <div className="flex flex-row items-center justify-between">
+                                    <Checkbox
+                                        checked={checkedTasks.includes(
+                                            task.task_id!,
                                         )}
-                                        {task.task_due_date && (
-                                            <Card className="py-4">
-                                                <CardContent className="mt-2 flex flex-col items-center justify-center gap-y-2 text-base font-semibold">
+                                        onCheckedChange={() =>
+                                            handleCheckboxChange(task.task_id!)
+                                        }
+                                    />
+                                    <Sheet>
+                                        <SheetTrigger asChild>
+                                            <div
+                                                className={`ml-6 grow ${checkedTasks.includes(task.task_id!) ? 'line-through' : ''}`}
+                                            >
+                                                <p className="text-base font-semibold leading-none">
+                                                    {task.task_name}
+                                                </p>
+                                                <div className="mt-2 flex flex-row items-center text-sm">
                                                     {task.task_due_date && (
                                                         <>
-                                                            <CalendarClock className="h-10 w-10" />
+                                                            <CalendarClock className="mr-2 h-5 w-5" />
                                                             {moment(
                                                                 task.task_due_date,
-                                                            ).format('LL')}
+                                                            ).format('ll')}
                                                         </>
                                                     )}
-                                                </CardContent>
-                                            </Card>
-                                        )}
-                                        <div className="mt-5">
-                                            <p className="mt-2 text-base font-semibold">
-                                                NOTES
+                                                </div>
+                                            </div>
+                                        </SheetTrigger>
+                                        <SheetContent className="flex flex-col gap-y-3">
+                                            <p className="text-base font-semibold underline">
+                                                TASK DETAILS
                                             </p>
-                                            <Card className="mt-2 py-4">
-                                                <CardContent className="py-1 text-base">
-                                                    {task.task_notes ||
-                                                        'No notes available.'}
-                                                </CardContent>
-                                            </Card>
-                                        </div>
-                                    </SheetContent>
-                                </Sheet>
-                                <div>
-                                    <DeleteTaskDialog taskId={task.id} />
+                                            <p className="text-3xl font-bold leading-none">
+                                                {task.task_name}
+                                            </p>
+                                            {task.task_group && (
+                                                <div>
+                                                    <Badge>
+                                                        {task.task_group}
+                                                    </Badge>
+                                                </div>
+                                            )}
+                                            {task.task_due_date && (
+                                                <Card className="py-4">
+                                                    <CardContent className="mt-2 flex flex-col items-center justify-center gap-y-2 text-base font-semibold">
+                                                        {task.task_due_date && (
+                                                            <>
+                                                                <CalendarClock className="h-10 w-10" />
+                                                                {moment(
+                                                                    task.task_due_date,
+                                                                ).format('LL')}
+                                                            </>
+                                                        )}
+                                                    </CardContent>
+                                                </Card>
+                                            )}
+                                            <div className="mt-5">
+                                                <p className="mt-2 text-base font-semibold">
+                                                    NOTES
+                                                </p>
+                                                <Card className="mt-2 py-4">
+                                                    <CardContent className="py-1 text-base">
+                                                        {task.task_notes ||
+                                                            'No notes available.'}
+                                                    </CardContent>
+                                                </Card>
+                                            </div>
+                                        </SheetContent>
+                                    </Sheet>
+                                    <div>
+                                        <DeleteTaskDialog
+                                            taskId={task.task_id!}
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                        </CardContent>
-                    </Card>
-                ))}
+                            </CardContent>
+                        </Card>
+                    ))}
             </div>
         </>
     );
