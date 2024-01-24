@@ -1,3 +1,4 @@
+import { TaskGroup } from '@/model';
 import { useState, createContext, ReactNode } from 'react';
 
 interface AddMoreListContextProps {
@@ -5,8 +6,8 @@ interface AddMoreListContextProps {
 }
 
 interface AddMoreListContextValue {
-    listOfTasks: string[];
-    setListOfTasks: React.Dispatch<React.SetStateAction<string[]>>;
+    listOfTasks: TaskGroup[];
+    setListOfTasks: React.Dispatch<React.SetStateAction<TaskGroup[]>>;
 }
 
 const AddMoreListContext = createContext<AddMoreListContextValue>({
@@ -15,7 +16,7 @@ const AddMoreListContext = createContext<AddMoreListContextValue>({
 });
 
 const AddMoreListContextProvider = ({ children }: AddMoreListContextProps) => {
-    const [listOfTasks, setListOfTasks] = useState<string[]>([]);
+    const [listOfTasks, setListOfTasks] = useState<TaskGroup[]>([]);
 
     const contextValue: AddMoreListContextValue = {
         listOfTasks,

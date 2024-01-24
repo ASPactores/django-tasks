@@ -14,6 +14,13 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { DialogFooter } from '@/components/ui/dialog';
+import moment from 'moment';
+import { useMutation, useQueryClient } from 'react-query';
+import { CircleSlash, XCircle } from 'lucide-react';
+import { createTask } from '@/api/taskApiService';
+import { toast } from 'sonner';
+import { useParams } from 'react-router-dom';
+import { Task } from '@/model';
 
 export default function TaskForm({
     setOpen,
@@ -26,6 +33,8 @@ export default function TaskForm({
         task_due_date: z.coerce.date().optional(),
     });
 
+    const { group_id } = useParams<{ group_id: string }>();
+
     type TaskFormInputs = z.infer<typeof taskFormSchema>;
 
     const taskForm = useForm<TaskFormInputs>({
@@ -37,13 +46,43 @@ export default function TaskForm({
         },
     });
 
-    const submit = (data: TaskFormInputs) => {
-        console.log(data);
-
-        // TODO: When data is succesfully sent, close the dialog
-        setTimeout(() => {
+    const queryClient = useQueryClient();
+    const { mutate, isLoading } = useMutation(createTask, {
+        onSuccess: async (response) => {
+            toast(
+                <>
+                    <CircleSlash className="mr-2 h-6 w-6" color="#32d27f" />
+                    {response?.data.task_name} has been created successfully!
+                </>,
+            );
+            queryClient.invalidateQueries();
             setOpen(false);
-        }, 1000);
+        },
+        onError: () => {
+            toast(
+                <>
+                    <XCircle className="mr-2 h-6 w-6" color="#932525" />
+                    Error in creating group!
+                </>,
+            );
+
+            return;
+        },
+    });
+
+    const submit = (data: TaskFormInputs) => {
+        const { task_due_date, ...rest } = data;
+        const formatted_date = moment(data.task_due_date).format('YYYY-MM-DD');
+        const new_data:
+            | Task
+            | (Omit<Task, 'task_group'> & {
+                  task_group?: string | undefined;
+              }) = {
+            ...rest,
+            task_due_date: formatted_date,
+            ...(group_id && { task_group: group_id! }),
+        };
+        mutate(new_data as Task);
     };
 
     return (

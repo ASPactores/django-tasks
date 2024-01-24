@@ -13,9 +13,13 @@ import * as z from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useContext } from 'react';
 import { AddMoreListContext } from '@/contexts/AddMoreListContextProvider';
+import { useMutation } from 'react-query';
+import { createTaskGroup } from '@/api/taskApiService';
+import { toast } from 'sonner';
+import { CircleSlash, XCircle } from 'lucide-react';
 
 const listSchema = z.object({
-    list_name: z.string().min(1, 'Input at least 1 character.'),
+    group_name: z.string().min(1, 'Input at least 1 character.'),
 });
 
 export default function AddMoreListForms({
@@ -27,12 +31,34 @@ export default function AddMoreListForms({
     const listForm = useForm<z.infer<typeof listSchema>>({
         resolver: zodResolver(listSchema),
         defaultValues: {
-            list_name: '',
+            group_name: '',
+        },
+    });
+
+    const { mutate, isLoading } = useMutation(createTaskGroup, {
+        onSuccess: async (response) => {
+            toast(
+                <>
+                    <CircleSlash className="mr-2 h-6 w-6" color="#32d27f" />
+                    {response?.data.group_name} has been created successfully!
+                </>,
+            );
+            setListOfTasks([...listOfTasks, response!.data]);
+        },
+        onError: () => {
+            toast(
+                <>
+                    <XCircle className="mr-2 h-6 w-6" color="#932525" />
+                    Error in creating group!
+                </>,
+            );
+
+            return;
         },
     });
 
     const submit = (data: z.infer<typeof listSchema>) => {
-        setListOfTasks([...listOfTasks, data.list_name]);
+        mutate(data);
         setOpen(false);
     };
 
@@ -45,7 +71,7 @@ export default function AddMoreListForms({
                 >
                     <FormField
                         control={listForm.control}
-                        name="list_name"
+                        name="group_name"
                         render={({ field }) => (
                             <FormItem>
                                 <FormControl>
@@ -65,7 +91,13 @@ export default function AddMoreListForms({
                         >
                             Cancel
                         </Button>
-                        <Button type="submit">Add</Button>
+                        {isLoading ? (
+                            <Button type="submit" disabled>
+                                Adding...
+                            </Button>
+                        ) : (
+                            <Button type="submit">Add</Button>
+                        )}
                     </DialogFooter>
                 </form>
             </Form>
